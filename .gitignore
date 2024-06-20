@@ -36,3 +36,5 @@ src/version.h
 manpages/fatlabel.8
 manpages/mkfs.fat.8
 manpages/fsck.fat.8
+
+INSTALL
