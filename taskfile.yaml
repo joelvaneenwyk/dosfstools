@@ -7,9 +7,15 @@ tasks:
     cmds:
       - task: build
 
+  install-xxd:
+    cmds:
+      - cmd: sudo apt-get update
+      - cmd: sudo apt-get install --yes --no-install-recommends xxd
+
   build:
+    deps: [install-xxd]
     cmds:
       - cmd: automake --add-missing
-      - cmd: ./autogen.sh
+      - cmd: ./autogen.sh --without-iconv
       - cmd: ./configure
       - cmd: make
