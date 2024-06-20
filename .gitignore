@@ -38,3 +38,8 @@ manpages/mkfs.fat.8
 manpages/fsck.fat.8
 
 INSTALL
+
+confdefs.h
+conftest.c
+conf*.awk
+dosfstools-*.tar.gz

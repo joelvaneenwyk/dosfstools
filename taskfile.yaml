@@ -7,15 +7,46 @@ tasks:
     cmds:
       - task: build
 
-  install-xxd:
+  install-dependencies:
+    deps: []
+    status:
+      - xxd --version
+      - gettext --version
     cmds:
       - cmd: sudo apt-get update
-      - cmd: sudo apt-get install --yes --no-install-recommends xxd
+      - cmd: |
+          sudo apt-get install --yes --no-install-recommends \
+            xxd gettext
+
+  # This is a copy of 'autogen.sh' with some modifications.
+  autogen:
+    deps: [install-dependencies]
+    cmds:
+      - cmd: |
+          # Install config.rpath which is needed for AM_ICONV macro
+          for dir in "$GETTEXT_DIR" /usr/share/gettext /usr/local/share/gettext; do
+            if test -f "$dir/config.rpath"; then
+              test -f config.rpath || echo "autogen.sh: installing './config.rpath'"
+              cp -f "$dir/config.rpath" .
+              break
+            fi
+          done
+      # These commands essentially replicate the 'autoreconf -vfi' command.
+      - cmd: aclocal --force
+      - cmd: autoconf --force
+      - cmd: automake --add-missing --copy --force-missing --include-deps
 
   build:
-    deps: [install-xxd]
+    deps: [autogen]
+    env:
+      LDFLAGS: --static
+      CONFIGURE_FLAGS: --without-iconv
+      CFLAGS: -W -Wall -O2 -g -fwrapv -fsanitize=address
     cmds:
-      - cmd: automake --add-missing
-      - cmd: ./autogen.sh --without-iconv
-      - cmd: ./configure
+      - cmd: ./configure $CONFIGURE_FLAGS
       - cmd: make
+
+  check:
+    deps: [build]
+    cmds:
+      - cmd: make check

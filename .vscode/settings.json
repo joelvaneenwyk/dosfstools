@@ -1,0 +1,5 @@
+{
+    "autotools.autoreconfTool": "autoreconf",
+    "autotools.autoBootstrap": false,
+    "autotools.autoreconfWarnPortability": true
+}
